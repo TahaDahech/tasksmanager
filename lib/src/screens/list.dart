@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test2/src/basic_widgets/buttons.dart';
 import '../colors/extra_colors.dart';
 
 class Lists extends StatefulWidget {
-  List<String> tasksList = [];
-  Lists({Key? key, required this.tasksList}) : super(key: key);
+  Lists({Key? key}) : super(key: key);
 
   @override
-  _ListsState createState() => _ListsState(tasksList);
+  _ListsState createState() => _ListsState();
 }
 
 class _ListsState extends State<Lists> {
-  List<String> tasksList = [];
-  _ListsState(tasksList);
+  String displayname = "";
+  List<String> task1 = [];
+  void initState() {
+    getdata();
+  }
+
+  void getdata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setStringList('tasklist', tasks);
+  }
 
   List<String> tasks = [
     'gym and training',
@@ -28,15 +37,6 @@ class _ListsState extends State<Lists> {
 
   @override
   Widget build(BuildContext context) {
-    if (tasksList.isEmpty) {
-      setState(() {
-        tasksList = tasks;
-      });
-    } else {
-      setState(() {
-        tasks = tasksList;
-      });
-    }
     var screenSize = MediaQuery.of(context).size;
     bool deleted = false;
     return Scaffold(
@@ -53,18 +53,18 @@ class _ListsState extends State<Lists> {
     );
   }
 
-  Widget listdismissible(notifs, deleted) {
+  Widget listdismissible(tasks, deleted) {
     return SizedBox(
       height: 650.0,
       child: ListView.builder(
-        itemCount: notifs.length,
+        itemCount: tasks.length,
         itemBuilder: (context, index) {
-          final item = notifs[index];
+          final item = tasks[index];
           return Dismissible(
             key: Key(item),
             onDismissed: (direction) {
               setState(() {
-                notifs.removeAt(index);
+                tasks.removeAt(index);
               });
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text("$item dismissed")));

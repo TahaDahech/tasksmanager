@@ -30,9 +30,7 @@ Widget elevatedbutton(
         ),
         onPressed: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddTask(tasksList: tasksList)));
+              context, MaterialPageRoute(builder: (context) => AddTask()));
         },
       ),
     ),

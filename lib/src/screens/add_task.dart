@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test2/src/colors/extra_colors.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'list.dart';
 
 class AddTask extends StatefulWidget {
-  List<String> tasksList = [];
-  AddTask({Key? key, required this.tasksList}) : super(key: key);
+  AddTask({Key? key}) : super(key: key);
 
   @override
-  State<AddTask> createState() => _AddTaskState(tasksList);
+  State<AddTask> createState() => _AddTaskState();
 }
 
 class _AddTaskState extends State<AddTask> {
-  List<String> tasksList = [];
-  _AddTaskState(tasksList);
+  _AddTaskState();
 
   TextEditingController myControllertitle = TextEditingController();
   TextEditingController myControllerdisc = TextEditingController();
@@ -55,37 +53,39 @@ class _AddTaskState extends State<AddTask> {
         Container(margin: const EdgeInsets.only(top: 30.0)),
         textfielddate("${selectedDate.toLocal()}".split(' ')[0], 18.0),
         Container(margin: const EdgeInsets.only(top: 30.0)),
-        SizedBox(
-          width: 350.0,
-          height: 40.0,
-          child: ButtonTheme(
-            child: ElevatedButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(primarypurple)),
-              child: const Text(
-                'Confirm',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Quicksand',
-                  fontSize: 15,
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  tasksList.add(myControllertitle.text);
-                });
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Lists(tasksList: tasksList)));
-              },
-            ),
-          ),
-        ),
+        buttonConfirm(),
       ],
     ));
+  }
+
+  Widget buttonConfirm() {
+    return SizedBox(
+      width: 350.0,
+      height: 40.0,
+      child: ButtonTheme(
+        child: ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(primarypurple)),
+          child: const Text(
+            'Confirm',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Quicksand',
+              fontSize: 15,
+              color: Colors.white,
+            ),
+          ),
+          onPressed: () async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            List<String>? s = prefs.getStringList('tasklist');
+            s!.add(myControllertitle.text);
+            prefs.setStringList('tasklist', s);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Lists()));
+          },
+        ),
+      ),
+    );
   }
 
   Widget textfieldForm(String text, double size) {
@@ -252,9 +252,7 @@ class _AddTaskState extends State<AddTask> {
             color: primarypurple,
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Lists(tasksList: tasksList)));
+                  context, MaterialPageRoute(builder: (context) => Lists()));
             },
           ),
         ),
@@ -275,7 +273,7 @@ class _AddTaskState extends State<AddTask> {
             ),
           ),
         ),
-        Spacer(),
+        const Spacer(),
         Container(),
       ],
     );

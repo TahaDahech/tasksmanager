@@ -13,9 +13,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.black,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Lists(
-        tasksList: [],
-      ),
+      home: Lists(),
     );
   }
 }
